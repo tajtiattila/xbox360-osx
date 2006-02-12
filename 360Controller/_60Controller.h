@@ -54,6 +54,7 @@ protected:
     bool invertLeftX,invertLeftY;
     bool invertRightX,invertRightY;
     short deadzoneLeft,deadzoneRight;
+    bool relativeLeft,relativeRight;
 
 public:
     // this is from the IORegistryEntry - no provider yet

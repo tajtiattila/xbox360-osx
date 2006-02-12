@@ -27,7 +27,6 @@
 
 #define NO_ITEMS            @"No devices found"
 
-
 // Passes a C callback back to the Objective C class
 static void CallbackFunction(void *target,IOReturn result,void *refCon,void *sender)
 {
@@ -41,15 +40,12 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     io_service_t object=0;
     BOOL update;
     
-    NSLog(@"Device state change\n");
     update=FALSE;
     while((object=IOIteratorNext(iterator))!=0) {
-        if((!update)&&(IOObjectConformsTo(object,"Xbox360ControllerClass")))
-            update=TRUE;
         IOObjectRelease(object);
+        update=TRUE;
     }
-    if(update)
-        [(Pref360ControlPref*)param handleDeviceChange];
+    if(update) [(Pref360ControlPref*)param handleDeviceChange];
 }
 
 @implementation Pref360ControlPref
@@ -236,9 +232,11 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     [leftStickDeadzone setEnabled:enable];
     [leftStickInvertX setEnabled:enable];
     [leftStickInvertY setEnabled:enable];
+    [leftLinked setEnabled:enable];
     [rightStickDeadzone setEnabled:enable];
     [rightStickInvertX setEnabled:enable];
     [rightStickInvertY setEnabled:enable];
+    [rightLinked setEnabled:enable];
 }
 
 // Reset GUI components
@@ -279,6 +277,7 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
 // Stop using the HID device
 - (void)stopDevice
 {
+    if(registryEntry==0) return;
     [self testMotorsLarge:0 small:0];
     [self setMotorOverride:FALSE];
     [self updateLED:0x00];
@@ -312,7 +311,6 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     CFRunLoopSourceRef eventSource;
     IOReturn ret;
     
-    [self stopDevice];
     [self resetDisplay];
     i=[deviceList indexOfSelectedItem];
     if(([deviceArray count]==0)||(i==-1)) {
@@ -353,15 +351,6 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
             case 0x01:  // Generic Desktop
                 j=0;
                 switch(usage) {
-                    case 0x92:  // Digital right
-                        j++;
-                    case 0x93:  // Digital left
-                        j++;
-                    case 0x91:  // Digital down
-                        j++;
-                    case 0x90:  // Digital up
-                        buttons[11+j]=cookie;
-                        break;
                     case 0x35:  // Right trigger
                         j++;
                     case 0x32:  // Left trigger
@@ -380,7 +369,7 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
                 }
                 break;
             case 0x09:  // Button
-                if((usage>=1)&&(usage<=11)) {
+                if((usage>=1)&&(usage<=15)) {
                     // Button 1-11
                     buttons[usage-1]=cookie;
                 }
@@ -448,6 +437,11 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
             if(CFDictionaryGetValueIfPresent(dict,CFSTR("InvertLeftY"),(void*)&boolValue)) {
                 [leftStickInvertY setState:CFBooleanGetValue(boolValue)?NSOnState:NSOffState];
             } else NSLog(@"No value for InvertLeftY");
+            if(CFDictionaryGetValueIfPresent(dict,CFSTR("RelativeLeft"),(void*)&boolValue)) {
+                BOOL enable=CFBooleanGetValue(boolValue);
+                [leftLinked setState:enable?NSOnState:NSOffState];
+                [leftStick setLinked:enable];
+            } else NSLog(@"No value for RelativeLeft");
             if(CFDictionaryGetValueIfPresent(dict,CFSTR("DeadzoneLeft"),(void*)&intValue)) {
                 UInt16 i;
                 
@@ -461,6 +455,11 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
             if(CFDictionaryGetValueIfPresent(dict,CFSTR("InvertRightY"),(void*)&boolValue)) {
                 [rightStickInvertY setState:CFBooleanGetValue(boolValue)?NSOnState:NSOffState];
             } else NSLog(@"No value for InvertRightY");
+            if(CFDictionaryGetValueIfPresent(dict,CFSTR("RelativeRight"),(void*)&boolValue)) {
+                BOOL enable=CFBooleanGetValue(boolValue);
+                [rightLinked setState:enable?NSOnState:NSOffState];
+                [rightStick setLinked:enable];
+            } else NSLog(@"No value for RelativeRight");
             if(CFDictionaryGetValueIfPresent(dict,CFSTR("DeadzoneRight"),(void*)&intValue)) {
                 UInt16 i;
                 
@@ -500,6 +499,7 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     DeviceItem *item;
     
     // Scrub old items
+    [self stopDevice];
     [self deleteDeviceList];
     // Add new items
     hidDictionary=IOServiceMatching(kIOHIDDeviceKey);
@@ -529,20 +529,23 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
 // Start up
 - (void)mainViewDidLoad
 {
+    io_object_t object;
+    
     // Get master port, for accessing I/O Kit
     IOMasterPort(MACH_PORT_NULL,&masterPort);
     // Set up notification of USB device addition/removal
     notifyPort=IONotificationPortCreate(masterPort);
     notifySource=IONotificationPortGetRunLoopSource(notifyPort);
     CFRunLoopAddSource(CFRunLoopGetCurrent(),notifySource,kCFRunLoopCommonModes);
-    IOServiceAddMatchingNotification(notifyPort,kIOFirstMatchNotification,IOServiceMatching(kIOUSBDeviceClassName),callbackHandleDevice,self,&onIterator);
-    IOServiceAddMatchingNotification(notifyPort,kIOTerminatedNotification,IOServiceMatching(kIOUSBDeviceClassName),callbackHandleDevice,self,&offIterator);
     // Prepare other fields
     deviceArray=[[NSMutableArray arrayWithCapacity:1] retain];
     device=NULL;
     hidQueue=NULL;
-    // Fill in any existing controllers in list
-    [self updateDeviceList];
+    // Activate callbacks
+    IOServiceAddMatchingNotification(notifyPort,kIOFirstMatchNotification,IOServiceMatching(kIOUSBDeviceClassName),callbackHandleDevice,self,&onIterator);
+    callbackHandleDevice(self,onIterator);
+    IOServiceAddMatchingNotification(notifyPort,kIOTerminatedNotification,IOServiceMatching(kIOUSBDeviceClassName),callbackHandleDevice,self,&offIterator);
+    while((object=IOIteratorNext(offIterator))!=0) IOObjectRelease(object);
 }
 
 // Shut down
@@ -574,8 +577,8 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
 - (void)changeSetting:(id)sender
 {
     CFDictionaryRef dict;
-    CFStringRef keys[6];
-    CFTypeRef values[6];
+    CFStringRef keys[8];
+    CFTypeRef values[8];
     UInt16 i;
     
     // Set keys and values
@@ -593,12 +596,18 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     keys[5]=CFSTR("DeadzoneRight");
     i=[rightStickDeadzone doubleValue];
     values[5]=CFNumberCreate(NULL,kCFNumberShortType,&i);
+    keys[6]=CFSTR("RelativeLeft");
+    values[6]=([leftLinked state]==NSOnState)?kCFBooleanTrue:kCFBooleanFalse;
+    keys[7]=CFSTR("RelativeRight");
+    values[7]=([rightLinked state]==NSOnState)?kCFBooleanTrue:kCFBooleanFalse;
     // Create dictionary
-    dict=CFDictionaryCreate(NULL,(const void**)keys,(const void**)values,6,&kCFTypeDictionaryKeyCallBacks,&kCFTypeDictionaryValueCallBacks);
+    dict=CFDictionaryCreate(NULL,(const void**)keys,(const void**)values,sizeof(keys)/sizeof(keys[0]),&kCFTypeDictionaryKeyCallBacks,&kCFTypeDictionaryValueCallBacks);
     // Set property
     IORegistryEntrySetCFProperties(registryEntry,dict);
     // Update UI
+    [leftStick setLinked:([leftLinked state]==NSOnState)];
     [leftStick setDeadzone:[leftStickDeadzone doubleValue]];
+    [rightStick setLinked:([rightLinked state]==NSOnState)];
     [rightStick setDeadzone:[rightStickDeadzone doubleValue]];
 }
 

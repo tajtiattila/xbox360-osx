@@ -7,7 +7,7 @@
         {CLASS = MyMainButtons; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = MyShoulderButton; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {
-            ACTIONS = {selectDevice = id; }; 
+            ACTIONS = {changeSetting = id; selectDevice = id; }; 
             CLASS = NSPreferencePane; 
             LANGUAGE = ObjC; 
             OUTLETS = {

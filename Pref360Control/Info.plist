@@ -24,8 +24,6 @@
 	<string>Pref360ControlPref</string>
 	<key>NSPrefPaneIconFile</key>
 	<string>Pref360ControlPref.tiff</string>
-	<key>NSPrefPaneIconLabel</key>
-	<string>Pref360Control</string>
 	<key>NSPrincipalClass</key>
 	<string>Pref360ControlPref</string>
 </dict>

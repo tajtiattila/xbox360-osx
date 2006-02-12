@@ -18,6 +18,7 @@
                 centreButtons = MyCentreButtons; 
                 deviceList = NSPopUpButton; 
                 digiStick = MyDigitalStick; 
+                leftLinked = NSButton; 
                 leftShoulder = MyShoulderButton; 
                 leftStick = MyAnalogStick; 
                 leftStickDeadzone = NSSlider; 
@@ -26,6 +27,7 @@
                 leftTrigger = NSProgressIndicator; 
                 leftTriggerDeadzone = NSSlider; 
                 rightButtons = MyMainButtons; 
+                rightLinked = NSButton; 
                 rightShoulder = MyShoulderButton; 
                 rightStick = MyAnalogStick; 
                 rightStickDeadzone = NSSlider; 

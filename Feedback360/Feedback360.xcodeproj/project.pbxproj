@@ -263,8 +263,14 @@
 		3BBDC69909793BF60023AAD8 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
 				SDKROOT = /Developer/SDKs/MacOSX10.3.9.sdk;
+				SDKROOT_i386 = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
 		};

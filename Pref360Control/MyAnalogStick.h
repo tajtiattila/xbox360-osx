@@ -26,7 +26,7 @@
 {
     int deadzone;
     int x,y;
-    BOOL pressed;
+    BOOL pressed,linked;
 }
 
 - (void)setDeadzone:(int)pos;
@@ -34,5 +34,6 @@
 - (void)setPositionX:(int)xPos;
 - (void)setPositionY:(int)xPos;
 - (void)setPressed:(BOOL)pressedState;
+- (void)setLinked:(BOOL)linkedState;
 
 @end

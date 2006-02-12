@@ -43,6 +43,7 @@
     IBOutlet MyDigitalStick *digiStick;
     IBOutlet MyShoulderButton *leftShoulder;
     IBOutlet MyAnalogStick *leftStick;
+    IBOutlet NSButton *leftLinked;
     IBOutlet NSSlider *leftStickDeadzone;
     IBOutlet NSButton *leftStickInvertX;
     IBOutlet NSButton *leftStickInvertY;
@@ -50,6 +51,7 @@
     IBOutlet MyMainButtons *rightButtons;
     IBOutlet MyShoulderButton *rightShoulder;
     IBOutlet MyAnalogStick *rightStick;
+    IBOutlet NSButton *rightLinked;
     IBOutlet NSSlider *rightStickDeadzone;
     IBOutlet NSButton *rightStickInvertX;
     IBOutlet NSButton *rightStickInvertY;

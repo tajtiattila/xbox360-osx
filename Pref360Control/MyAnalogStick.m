@@ -34,6 +34,7 @@
         x=0;
         y=0;
         pressed=FALSE;
+        linked=FALSE;
 	}
 	return self;
 }
@@ -59,17 +60,32 @@
     NSDrawLightBezel(area,area);
     // Draw pressed state
     if(pressed) {
-        area.origin.x+=PRESSED_INSET;
-        area.origin.y+=PRESSED_INSET;
-        area.size.width-=PRESSED_INSET*2;
-        area.size.height-=PRESSED_INSET*2;
+        NSRect pressArea;
+        
+        pressArea=area;
+        pressArea.origin.x+=PRESSED_INSET;
+        pressArea.origin.y+=PRESSED_INSET;
+        pressArea.size.width-=PRESSED_INSET*2;
+        pressArea.size.height-=PRESSED_INSET*2;
         [[NSColor blackColor] set];
-        NSRectFill(area);
+        NSRectFill(pressArea);
     }
     // Draw deadzone
     if(deadzone!=0) {
         [[NSColor redColor] set];
-        NSFrameRect(deadRect);
+        if(linked) NSFrameRect(deadRect);
+        else {
+            NSRect trueRect;
+            
+            trueRect=deadRect;
+            trueRect.origin.x=area.origin.x;
+            trueRect.size.width=area.size.width;
+            NSFrameRect(trueRect);
+            trueRect=deadRect;
+            trueRect.origin.y=area.origin.y;
+            trueRect.size.height=area.size.height;
+            NSFrameRect(trueRect);
+        }
     }
     // Draw position
     if(pressed) [[NSColor whiteColor] set];
@@ -105,6 +121,12 @@
 - (void)setPressed:(BOOL)pressedState
 {
     pressed=pressedState;
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setLinked:(BOOL)linkedState
+{
+    linked=linkedState;
     [self setNeedsDisplay:YES];
 }
 

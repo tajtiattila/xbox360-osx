@@ -62,6 +62,10 @@ void Xbox360ControllerClass::readSettings(void)
     if(number!=NULL) deadzoneLeft=number->unsigned32BitValue();
     number=OSDynamicCast(OSNumber,dataDictionary->getObject("DeadzoneRight"));
     if(number!=NULL) deadzoneRight=number->unsigned32BitValue();
+    value=OSDynamicCast(OSBoolean,dataDictionary->getObject("RelativeLeft"));
+    if(value!=NULL) relativeLeft=value->getValue();
+    value=OSDynamicCast(OSBoolean,dataDictionary->getObject("RelativeRight"));
+    if(value!=NULL) relativeRight=value->getValue();
     /*
     IOLog("Xbox360ControllerClass preferences loaded:\n  invertLeft X: %s, Y: %s\n   invertRight X: %s, Y:%s\n  deadzone Left: %d, Right: %d\n\n",
             invertLeftX?"True":"False",invertLeftY?"True":"False",
@@ -83,6 +87,7 @@ bool Xbox360ControllerClass::init(OSDictionary *propTable)
     invertLeftX=invertLeftY=FALSE;
     invertRightX=invertRightY=FALSE;
     deadzoneLeft=deadzoneRight=0;
+    relativeLeft=relativeRight=FALSE;
     readSettings();
     // Done
     return res;
@@ -302,15 +307,25 @@ void Xbox360ControllerClass::fiddleReport(IOBufferMemoryDescriptor *buffer)
     if(invertRightX) report->right.x=~report->right.x;
     if(!invertRightY) report->right.y=~report->right.y;
     if(deadzoneLeft!=0) {
-        if((getAbsolute(report->left.x)<deadzoneLeft)&&(getAbsolute(report->left.y)<deadzoneLeft)) {
-            report->left.x=0;
-            report->left.y=0;
+        if(relativeLeft) {
+            if((getAbsolute(report->left.x)<deadzoneLeft)&&(getAbsolute(report->left.y)<deadzoneLeft)) {
+                report->left.x=0;
+                report->left.y=0;
+            }
+        } else {
+            if(getAbsolute(report->left.x)<deadzoneLeft) report->left.x=0;
+            if(getAbsolute(report->left.y)<deadzoneLeft) report->left.y=0;
         }
     }
     if(deadzoneRight!=0) {
-        if((getAbsolute(report->right.x)<deadzoneRight)&&(getAbsolute(report->right.y)<deadzoneRight)) {
-            report->right.x=0;
-            report->right.y=0;
+        if(relativeRight) {
+            if((getAbsolute(report->right.x)<deadzoneRight)&&(getAbsolute(report->right.y)<deadzoneRight)) {
+                report->right.x=0;
+                report->right.y=0;
+            }
+        } else {
+            if(getAbsolute(report->right.x)<deadzoneRight) report->right.x=0;
+            if(getAbsolute(report->right.y)<deadzoneRight) report->right.y=0;
         }
     }
 }
