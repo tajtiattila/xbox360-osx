@@ -17,7 +17,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.0d2</string>
+	<string>1.0.0d3</string>
 	<key>IOKitPersonalities</key>
 	<dict>
 		<key>Controller</key>
@@ -79,6 +79,106 @@
 			<integer>48879</integer>
 			<key>idVendor</key>
 			<integer>5678</integer>
+		</dict>
+		<key>TSZPelican</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.mice.driver.Xbox360Controller</string>
+            <key>IOCFPlugInTypes</key>
+            <dict>
+                <key>F4545CE5-BF5B-11D6-A4BB-0003933E3E3E</key>
+                <string>360Controller.kext/Contents/PlugIns/Feedback360.plugin</string>
+            </dict>
+			<key>IOClass</key>
+			<string>Xbox360ControllerClass</string>
+			<key>IOKitDebug</key>
+			<integer>65535</integer>
+			<key>IOProviderClass</key>
+			<string>IOUSBDevice</string>
+			<key>idProduct</key>
+			<integer>513</integer>
+			<key>idVendor</key>
+			<integer>3695</integer>
+		</dict>
+		<key>MadCatzGamepad</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.mice.driver.Xbox360Controller</string>
+            <key>IOCFPlugInTypes</key>
+            <dict>
+                <key>F4545CE5-BF5B-11D6-A4BB-0003933E3E3E</key>
+                <string>360Controller.kext/Contents/PlugIns/Feedback360.plugin</string>
+            </dict>
+			<key>IOClass</key>
+			<string>Xbox360ControllerClass</string>
+			<key>IOKitDebug</key>
+			<integer>65535</integer>
+			<key>IOProviderClass</key>
+			<string>IOUSBDevice</string>
+			<key>idProduct</key>
+			<integer>18198</integer>
+			<key>idVendor</key>
+			<integer>1848</integer>
+		</dict>
+		<key>MadCatzProGamepad</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.mice.driver.Xbox360Controller</string>
+            <key>IOCFPlugInTypes</key>
+            <dict>
+                <key>F4545CE5-BF5B-11D6-A4BB-0003933E3E3E</key>
+                <string>360Controller.kext/Contents/PlugIns/Feedback360.plugin</string>
+            </dict>
+			<key>IOClass</key>
+			<string>Xbox360ControllerClass</string>
+			<key>IOKitDebug</key>
+			<integer>65535</integer>
+			<key>IOProviderClass</key>
+			<string>IOUSBDevice</string>
+			<key>idProduct</key>
+			<integer>18214</integer>
+			<key>idVendor</key>
+			<integer>1848</integer>
+		</dict>
+		<key>MadCatzMicroConGamepad</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.mice.driver.Xbox360Controller</string>
+            <key>IOCFPlugInTypes</key>
+            <dict>
+                <key>F4545CE5-BF5B-11D6-A4BB-0003933E3E3E</key>
+                <string>360Controller.kext/Contents/PlugIns/Feedback360.plugin</string>
+            </dict>
+			<key>IOClass</key>
+			<string>Xbox360ControllerClass</string>
+			<key>IOKitDebug</key>
+			<integer>65535</integer>
+			<key>IOProviderClass</key>
+			<string>IOUSBDevice</string>
+			<key>idProduct</key>
+			<integer>18230</integer>
+			<key>idVendor</key>
+			<integer>1848</integer>
+		</dict>
+		<key>BigBenController</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.mice.driver.Xbox360Controller</string>
+            <key>IOCFPlugInTypes</key>
+            <dict>
+                <key>F4545CE5-BF5B-11D6-A4BB-0003933E3E3E</key>
+                <string>360Controller.kext/Contents/PlugIns/Feedback360.plugin</string>
+            </dict>
+			<key>IOClass</key>
+			<string>Xbox360ControllerClass</string>
+			<key>IOKitDebug</key>
+			<integer>65535</integer>
+			<key>IOProviderClass</key>
+			<string>IOUSBDevice</string>
+			<key>idProduct</key>
+			<integer>1537</integer>
+			<key>idVendor</key>
+			<integer>5227</integer>
 		</dict>
 	</dict>
 	<key>OSBundleLibraries</key>

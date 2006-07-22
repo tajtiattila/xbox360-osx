@@ -28,7 +28,7 @@
  * just kept working with this one anyway :)
  */
 
-char ReportDescriptor[236] = {
+char ReportDescriptor[196] = {
     0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
     0x09, 0x05,                    // USAGE (Game Pad)
     0xa1, 0x01,                    // COLLECTION (Application)
@@ -36,11 +36,9 @@ char ReportDescriptor[236] = {
     0x09, 0x3a,                    //   USAGE (Counted Buffer)
     0xa1, 0x02,                    //   COLLECTION (Logical)
     0x75, 0x08,                    //     REPORT_SIZE (8)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
-    0x81, 0x01,                    //     INPUT (Cnst,Ary,Abs)
-    0x75, 0x08,                    //     REPORT_SIZE (8)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x95, 0x02,                    //     REPORT_COUNT (2)
     0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
+    0x09, 0x3f,                    //     USAGE (Reserved)
     0x09, 0x3b,                    //     USAGE (Byte Count)
     0x81, 0x01,                    //     INPUT (Cnst,Ary,Abs)
     0x75, 0x01,                    //     REPORT_SIZE (1)
@@ -122,27 +120,6 @@ char ReportDescriptor[236] = {
     0x09, 0x34,                    //       USAGE (Ry)
     0x81, 0x02,                    //       INPUT (Data,Var,Abs)
     0xc0,                          //     END_COLLECTION
-    0xc0,                          //   END_COLLECTION
-    0x05, 0x01,                    //   USAGE_PAGE (Generic Desktop)
-    0x09, 0x3a,                    //   USAGE (Counted Buffer)
-    0xa1, 0x02,                    //   COLLECTION (Logical)
-    0x75, 0x08,                    //     REPORT_SIZE (8)
-    0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
-    0x26, 0xff, 0x00,              //     LOGICAL_MAXIMUM (255)
-    0x35, 0x00,                    //     PHYSICAL_MINIMUM (0)
-    0x46, 0xff, 0x00,              //     PHYSICAL_MAXIMUM (255)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
-    0x91, 0x03,                    //     OUTPUT (Cnst,Var,Abs)
-    0x75, 0x08,                    //     REPORT_SIZE (8)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
-    0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
-    0x09, 0x3b,                    //     USAGE (Byte Count)
-    0x91, 0x01,                    //     OUTPUT (Cnst,Ary,Abs)
-    0x75, 0x08,                    //     REPORT_SIZE (8)
-    0x95, 0x08,                    //     REPORT_COUNT (8)
-    0x06, 0x00, 0xff,              //     USAGE_PAGE (Generic Desktop)
-    0x09, 0x01,                    //     USAGE (Vendor Usage 1)
-    0x91, 0x00,                    //     OUTPUT (Data,Ary,Abs)
     0xc0,                          //   END_COLLECTION
     0xc0                           // END_COLLECTION
 };
