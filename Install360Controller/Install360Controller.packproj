@@ -82,7 +82,7 @@
 											<key>Path Type</key>
 											<integer>2</integer>
 											<key>Privileges</key>
-											<integer>509</integer>
+											<integer>493</integer>
 											<key>Type</key>
 											<integer>3</integer>
 											<key>UID</key>
@@ -132,6 +132,38 @@
 													<integer>0</integer>
 													<key>Path</key>
 													<string>../360Controller/build/Deployment/360Controller.kext</string>
+													<key>Path Type</key>
+													<integer>2</integer>
+													<key>Privileges</key>
+													<integer>493</integer>
+													<key>Type</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>Children</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>Path</key>
+													<string>../Wireless360Controller/build/Release/Wireless360Controller.kext</string>
+													<key>Path Type</key>
+													<integer>2</integer>
+													<key>Privileges</key>
+													<integer>493</integer>
+													<key>Type</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>Children</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>Path</key>
+													<string>../WirelessGamingReceiver/build/Release/WirelessGamingReceiver.kext</string>
 													<key>Path Type</key>
 													<integer>2</integer>
 													<key>Privileges</key>
@@ -278,13 +310,13 @@
 						<key>IFPkgDescriptionTitle</key>
 						<string>XBox 360 Controller Installer</string>
 						<key>IFPkgDescriptionVersion</key>
-						<string>0.03</string>
+						<string>0.05</string>
 					</dict>
 				</dict>
 				<key>Display Information</key>
 				<dict>
 					<key>CFBundleGetInfoString</key>
-					<string>Install360Controller 0.03 Copyrights © 2006 Colin Munro</string>
+					<string>Install360Controller 0.05 Copyrights © 2006-2007 Colin Munro</string>
 					<key>CFBundleIconFile</key>
 					<string></string>
 					<key>CFBundleIconFile Path Type</key>
@@ -294,7 +326,7 @@
 					<key>CFBundleName</key>
 					<string>XBox 360 Controller Driver Installer</string>
 					<key>CFBundleShortVersionString</key>
-					<string>0.03</string>
+					<string>0.05</string>
 				</dict>
 				<key>Options</key>
 				<dict>
@@ -324,7 +356,7 @@
 					<key>IFMajorVersion</key>
 					<integer>0</integer>
 					<key>IFMinorVersion</key>
-					<integer>3</integer>
+					<integer>5</integer>
 				</dict>
 			</dict>
 		</dict>

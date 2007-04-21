@@ -1,6 +1,6 @@
 /*
     MICE Xbox 360 Controller driver for Mac OS X
-    Copyright (C) 2006 Colin Munro
+    Copyright (C) 2006-2007 Colin Munro
     
     Pref360ControlPref.m - main source of the pref pane
     
@@ -242,6 +242,8 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
 // Reset GUI components
 - (void)resetDisplay
 {
+    NSBundle *bundle;
+    
     [leftStick setPositionX:0 y:0];
     [leftStick setPressed:FALSE];
     [leftStick setDeadzone:0];
@@ -272,6 +274,9 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     [rightStickInvertY setState:NSOffState];
     // Disable inputs
     [self inputEnable:NO];
+    // Hide battery icon
+    bundle = [NSBundle bundleForClass:[self class]];
+    [batteryLevel setImage:[[[NSImage alloc] initByReferencingFile:[bundle pathForResource:@"battNone" ofType:@"tif"]] autorelease]];
 }
 
 // Stop using the HID device
@@ -478,6 +483,29 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     [self testMotorsLarge:0 small:0];
     largeMotor=0;
     smallMotor=0;
+    // Battery level?
+    {
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString *path;
+        CFTypeRef prop;
+        
+        path = nil;
+        if (IOObjectConformsTo(registryEntry, "WirelessHIDDevice"))
+        {
+            prop = IORegistryEntryCreateCFProperty(registryEntry, CFSTR("BatteryLevel"), NULL, 0);
+            if (prop != nil)
+            {
+                unsigned char level;
+                
+                if (CFNumberGetValue(prop, kCFNumberCharType, &level))
+                    path = [bundle pathForResource:[NSString stringWithFormat:@"batt%i", level / 64] ofType:@"tif"];
+                CFRelease(prop);
+            }
+        }
+        if (path == nil)
+            path = [bundle pathForResource:@"battNone" ofType:@"tif"];
+        [batteryLevel setImage:[[[NSImage alloc] initByReferencingFile:path] autorelease]];
+    }
 }
 
 // Clear out the device lists
@@ -494,7 +522,6 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     IOReturn ioReturn;
     io_iterator_t iterator;
     io_object_t hidDevice;
-    io_name_t className;
     int count;
     DeviceItem *item;
     
@@ -510,15 +537,17 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     }
     count=0;
     while(hidDevice=IOIteratorNext(iterator)) {
-        ioReturn=IOObjectGetClass(hidDevice,className);
-        if((ioReturn!=kIOReturnSuccess)||(strcmp(className,"Xbox360ControllerClass")!=0)) {
+        BOOL deviceWired = IOObjectConformsTo(hidDevice, "Xbox360ControllerClass");
+        BOOL deviceWireless = IOObjectConformsTo(hidDevice, "WirelessHIDDevice");
+        if ((!deviceWired) && (!deviceWireless))
+        {
             IOObjectRelease(hidDevice);
             continue;
         }
         item=[DeviceItem allocateDeviceItemForDevice:hidDevice];
         if(item==NULL) continue;
         // Add to item
-        [deviceList addItemWithTitle:[NSString stringWithFormat:@"Controller %i",++count]];
+        [deviceList addItemWithTitle:[NSString stringWithFormat:@"Controller %i (%@)",++count, deviceWireless ? @"Wireless" : @"Wired"]];
         [deviceArray addObject:item];
     }
     IOObjectRelease(iterator);
@@ -542,23 +571,52 @@ static void callbackHandleDevice(void *param,io_iterator_t iterator)
     device=NULL;
     hidQueue=NULL;
     // Activate callbacks
-    IOServiceAddMatchingNotification(notifyPort,kIOFirstMatchNotification,IOServiceMatching(kIOUSBDeviceClassName),callbackHandleDevice,self,&onIterator);
-    callbackHandleDevice(self,onIterator);
-    IOServiceAddMatchingNotification(notifyPort,kIOTerminatedNotification,IOServiceMatching(kIOUSBDeviceClassName),callbackHandleDevice,self,&offIterator);
-    while((object=IOIteratorNext(offIterator))!=0) IOObjectRelease(object);
+        // Wired
+    IOServiceAddMatchingNotification(notifyPort, kIOFirstMatchNotification, IOServiceMatching(kIOUSBDeviceClassName), callbackHandleDevice, self, &onIteratorWired);
+    callbackHandleDevice(self, onIteratorWired);
+    IOServiceAddMatchingNotification(notifyPort, kIOTerminatedNotification, IOServiceMatching(kIOUSBDeviceClassName), callbackHandleDevice, self, &offIteratorWired);
+    while((object = IOIteratorNext(offIteratorWired)) != 0)
+        IOObjectRelease(object);
+        // Wireless
+    IOServiceAddMatchingNotification(notifyPort, kIOFirstMatchNotification, IOServiceMatching("WirelessHIDDevice"), callbackHandleDevice, self, &onIteratorWireless);
+    callbackHandleDevice(self, onIteratorWireless);
+    IOServiceAddMatchingNotification(notifyPort, kIOTerminatedNotification, IOServiceMatching("WirelessHIDDevice"), callbackHandleDevice, self, &offIteratorWireless);
+    while((object = IOIteratorNext(offIteratorWireless)) != 0)
+        IOObjectRelease(object);
 }
 
 // Shut down
 - (void)dealloc
 {
+    int i;
+    DeviceItem *item;
+    FFEFFESCAPE escape;
+    unsigned char c;
+
     // Remove notification source
-    IOObjectRelease(onIterator);
-    IOObjectRelease(offIterator);
+    IOObjectRelease(onIteratorWired);
+    IOObjectRelease(onIteratorWireless);
+    IOObjectRelease(offIteratorWired);
+    IOObjectRelease(offIteratorWireless);
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(),notifySource,kCFRunLoopCommonModes);
     CFRunLoopSourceInvalidate(notifySource);
     IONotificationPortDestroy(notifyPort);
     // Release device and info
     [self stopDevice];
+    for (i = 0; i < [deviceArray count]; i++)
+    {
+        item = [deviceArray objectAtIndex:i];
+        if ([item ffDevice] == 0)
+            continue;
+        c = 0x06 + (i % 0x04);
+        escape.dwSize = sizeof(escape);
+        escape.dwCommand = 0x02;
+        escape.cbInBuffer = sizeof(c);
+        escape.lpvInBuffer = &c;
+        escape.cbOutBuffer = 0;
+        escape.lpvOutBuffer = NULL;
+        FFDeviceEscape([item ffDevice], &escape);
+    }
     [self deleteDeviceList];
     [deviceArray release];
     // Close master port
