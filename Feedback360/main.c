@@ -247,7 +247,7 @@ static HRESULT Feedback360Escape(void *that,FFEffectDownloadID downloadID,FFEFFE
             }
             break;
         default:
-            fprintf(stderr,"Xbox360Controller FF plugin: Unknown escape (%i)\n",escape->dwCommand);
+            fprintf(stderr, "Xbox360Controller FF plugin: Unknown escape (%i)\n", (int)escape->dwCommand);
             return FFERR_UNSUPPORTED;
     }
     return FF_OK;
@@ -336,9 +336,10 @@ static HRESULT Feedback360SetProperty(void *that,FFProperty property,void *value
     switch(property) {
         case FFPROP_FFGAIN:
             {
-                UInt32 value=*((UInt32*)value);
-                if(value>10000) return FFERR_INVALIDPARAM;
-                Emulate_SetGain(&this->emulator,value,10000);
+                UInt32 uValue = *((UInt32*)value);
+                if (uValue > 10000)
+					return FFERR_INVALIDPARAM;
+                Emulate_SetGain(&this->emulator, uValue, 10000);
             }
             return FF_OK;
         default:
