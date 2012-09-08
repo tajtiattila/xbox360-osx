@@ -45,6 +45,26 @@ static inline XBox360_SShort getAbsolute(XBox360_SShort value)
     return (reverse<0)?~reverse:reverse;
 }
 
+static inline void applyDeadzone(XBox360_SShort *p, short deadzone)
+{
+	bool neg;
+	XBox360_SShort tmp;
+	short alivezone;
+   
+	tmp=*p;
+	if (neg=(tmp<0)) tmp=~tmp;
+
+	if(tmp<deadzone) {
+		*p=0;
+		return;
+	}
+
+	alivezone=32767-deadzone;
+	tmp=(XBox360_SShort)((long)(tmp-deadzone)*32767/alivezone);
+
+	*p=(neg)?~tmp:tmp;
+}
+
 bool Wireless360Controller::init(OSDictionary *propTable)
 {
     bool res = super::init(propTable);
@@ -119,10 +139,8 @@ void Wireless360Controller::fiddleReport(unsigned char *data, int length)
         }
         else
         {
-            if (getAbsolute(report->left.x) < deadzoneLeft)
-                report->left.x = 0;
-            if (getAbsolute(report->left.y) < deadzoneLeft)
-                report->left.y = 0;
+			applyDeadzone(&report->left.x,deadzoneLeft);
+			applyDeadzone(&report->left.y,deadzoneLeft);
         }
     }
     if (deadzoneRight != 0)
@@ -137,10 +155,8 @@ void Wireless360Controller::fiddleReport(unsigned char *data, int length)
         }
         else
         {
-            if (getAbsolute(report->right.x) < deadzoneRight)
-                report->right.x = 0;
-            if (getAbsolute(report->right.y) < deadzoneRight)
-                report->right.y = 0;
+			applyDeadzone(&report->right.x,deadzoneRight);
+			applyDeadzone(&report->right.y,deadzoneRight);
         }
     }
 }
