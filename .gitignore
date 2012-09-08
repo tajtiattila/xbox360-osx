@@ -1,0 +1,4 @@
+.vimproject*
+*.dep
+*.hmap
+*/build
