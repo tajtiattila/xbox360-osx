@@ -468,7 +468,7 @@
 											<object class="NSTextFieldCell" key="NSCell" id="26653717">
 												<int key="NSCellFlags">67239424</int>
 												<int key="NSCellFlags2">272629760</int>
-												<string key="NSContents">Version 0.11</string>
+												<string key="NSContents">Version 0.12</string>
 												<object class="NSFont" key="NSSupport" id="276746597">
 													<string key="NSName">LucidaGrande</string>
 													<double key="NSSize">10</double>
